@@ -267,7 +267,7 @@ server.listen(port, () => {
 
 setInterval(() => {
   io.emit("updatePlayers", players);
-}, 1); // 1 millisecond interval
+}, 26); // 1 millisecond interval
 
 //   balls = [
 //     { column: 0, row: 0 },
