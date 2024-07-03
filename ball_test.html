@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ball in hole.</title>
+
+  <style>
+    #ball {
+      width: 50px;
+      height: 50px;
+      background-color: red;
+      border-radius: 50%;
+      position: absolute;
+      left: 50%; /* Center horizontally */
+      top: 50%;  /* Center vertically */
+      transform: translate(-50%, -50%); /* Adjust for center origin */
+    }
+
+    #debug {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 10px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+    <div id="ball"></div>
+    <div id="debug"></div> <div id="debug"></div>
+
+    <!-- <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", (event) => {
+        var socket = io();
+        const debugElement = document.getElementById("debug");
+        const balls = {};
+
+        socket.on('initialUpdate', (data) => {
+            logDebugInfo('Received initialUpdate:', data);
+            
+            // Create a ball for each player (if not exists) and set position
+            const ballId = `ball_${data.playerId}`;
+            if (!balls[ballId]) {
+                balls[ballId] = createBallElement(ballId);
+                document.body.appendChild(balls[ballId]);
+                balls[ballId].ballPosition = {x: window.innerWidth / 2, y: window.innerHeight / 2};
+                balls[ballId].ballVelocity = {x: 0, y: 0};
+            }
+
+            updateBallPosition(balls[ballId], data.ballPosition);
+        });
+
+        socket.on("ballUpdate", (data) => {
+            if (balls[data.playerId]) {
+            updateBallPosition(balls[data.playerId], data.ballPosition);
+            }
+        });
+
+        // Create new ball element with specified id
+        function createBallElement(ballId){
+            const ball = document.createElement("div");
+            ball.id = ballId;
+            ball.className = "ball"; // Apply ball styles
+            return ball;
+        }
+    
+        function updateBallPosition(ball, ballPosition) {
+            logDebugInfo('Updating ball position:', ballPosition);
+            const ballRadius = ball.offsetWidth / 2; // Half the ball's width
+            ball.style.left = (ballPosition.x - ballRadius) + 'px';
+            ball.style.top = (ballPosition.y - ballRadius) + 'px';
+        }
+
+
+        function logDebugInfo(message, data) {
+            const logEntry = document.createElement('p');
+            logEntry.textContent = `${message} ${JSON.stringify(data)}`;
+            debugElement.appendChild(logEntry);
+        }
+  
+        // Check if DeviceMotionEvent is supported
+        if (window.DeviceMotionEvent) {
+            window.addEventListener('devicemotion', function(event) {
+                if (event.accelerationIncludingGravity) {
+                    const acceleration = event.accelerationIncludingGravity;
+
+                    socket.emit('sensorData', acceleration);
+                }
+            });
+        } else {
+            console.log("DeviceMotionEvent is not supported");
+        }
+
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link href="/css/game.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", (event) => {
+        var socket = io();
+
+        function generateRandomAlphanumericCode(length) {
+          const characters =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+          let result = "";
+          const charactersLength = characters.length;
+          for (let i = 0; i < length; i++) {
+            result += characters.charAt(
+              Math.floor(Math.random() * charactersLength)
+            );
+          }
+          return result;
+        }
+
+        // Generate the random alphanumeric code
+        const randomAlphanumericCode = generateRandomAlphanumericCode(4);
+
+        // Output the random code to the console
+        console.log(
+          "Random 4-character alphanumeric code:",
+          randomAlphanumericCode
+        );
+
+        //socket.on("sendCode", (data) => {});
+        document.getElementById("sessionCode").textContent =
+          randomAlphanumericCode;
+        //send the code that will be used for the session
+        socket.emit("startGame", randomAlphanumericCode);
+
+        //socket.on("ballUpdate", (data) => {});
+      });
+    </script>
+  </head>
+  <body>
+    <center><h1>Desktop View</h1></center>
+    <div class="container text-center my-5">
+      <button id="request" class="btn btn-primary">request permission</button>
+      <button id="joystick-head">start</button>
+      <center>
+        <div id="game" class="mb-4">
+          <div id="maze" class="mb-3">
+            <!-- <div id="end"></div> -->
+          </div>
+
+          <!-- <div id="joystick" class="mx-auto">
+          <div class="joystick-arrow"></div>
+          <div class="joystick-arrow"></div>
+          <div class="joystick-arrow"></div>
+          <div class="joystick-arrow"></div>
+          <div id="joystick-head"></div>
+        </div> -->
+        </div>
+      </center>
+
+      <div id="joystick" class="mx-auto">
+        <div class="joystick-arrow"></div>
+        <div class="joystick-arrow"></div>
+        <div class="joystick-arrow"></div>
+        <div class="joystick-arrow"></div>
+        <!-- <button id="joystick-head">start</button> -->
+      </div>
+      <div id="note" class="mt-3">
+        Click the joystick to start!
+        <p>Move every ball to the center. Ready for hard mode? Press H</p>
+      </div>
+
+      <div id="youtube-card" class="mb-4">
+        How to simulate ball movement in a maze with JavaScript
+      </div>
+    </div>
+
+    <center>
+      <span id="sessionCode" class="border border-dark p-4 ml-4">CODE </span>
+    </center>
+
+    <script src="/js/game.js"></script>
+  </body>
+</html>

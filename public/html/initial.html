@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bootstrap Button and Input</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" rel="stylesInitial.css" />
+  </head>
+  <body>
+    <div id="initialContainer" class="container mt-5">
+      <div class="row">
+        <div class="col-md-6 offset-md-3 text-center">
+          <h1 class="mb-4">Game Interface</h1>
+          <button id="newGameButton" class="btn btn-primary mb-3 w-100">
+            New Game
+          </button>
+          <div class="form-group">
+            <input
+              type="text"
+              id="sessionCodeInput"
+              class="form-control w-100"
+              placeholder="Enter the code please..."
+            />
+          </div>
+          <button id="enterSessionBtn" class="btn btn-primary mb-3 w-100">
+            Enter Code
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+      document
+        .getElementById("newGameButton")
+        .addEventListener("click", function () {
+          // Navigate to the new HTML file
+
+          window.location.href = "/game";
+        });
+
+      document
+        .getElementById("enterSessionBtn")
+        .addEventListener("click", function () {
+          // Get the value from the input field
+          const userInput = document.getElementById("sessionCodeInput").value;
+
+          // Check if the input is not empty
+          if (userInput.trim() !== "") {
+            // Navigate to the /game route with the user input as a query parameter
+            window.location.href =
+              "/playerView?q=" + encodeURIComponent(userInput);
+          } else {
+            // Alert the user if the input field is empty
+            alert("Please enter a code.");
+          }
+        });
+    </script>
+  </body>
+</html>

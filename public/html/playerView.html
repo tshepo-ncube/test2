@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link href="/css/playerView.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", (event) => {
+        var socket = io();
+
+        // Receive a message
+        socket.on("receiveMessage", (data) => {
+          console.log("Message from server:", data);
+        });
+
+        // Function to get query parameters from the URL
+        function getQueryParams() {
+          const params = {};
+          const queryString = window.location.search.substring(1);
+          const regex = /([^&=]+)=([^&]*)/g;
+          let m;
+          while ((m = regex.exec(queryString))) {
+            params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+          }
+          return params;
+        }
+
+        // Display the query parameters on the page
+        const queryParams = getQueryParams();
+        console.log(queryParams.q);
+        document.getElementById(
+          "loadingMessage"
+        ).textContent = `Please wait while we display game ${queryParams.q} for you`;
+        console.log(JSON.stringify(queryParams));
+
+        socket.emit("SessionRequest", queryParams.q);
+        // Handle response when session is not found
+        socket.on("SessionNotFound", (data) => {
+          console.log(data.message); // Output: Session does not exist
+          const spinner = document.getElementById("spinnerLoader").remove();
+          document.getElementById(
+            "loadingMessage"
+          ).textContent = `Session ${data.sessionCode} Does Not Exist`;
+        });
+
+        socket.on("SessionJoined", (data) => {
+          console.log(data.message); // Output: Session does not exist
+          const spinner = document.getElementById("spinnerLoader").remove();
+          document.getElementById(
+            "loadingMessage"
+          ).textContent = `Session ${data.sessionCode} Found :)`;
+        });
+
+        socket.on("BallPosition", (data) => {
+          console.log(data); // Output: Session does not exist
+        });
+
+        document
+          .getElementById("move")
+          .addEventListener("click", function (event) {
+            console.log("move");
+
+            socket.emit("BallMove", {
+              x: 12,
+              y: 34,
+              velocityX: 45,
+              velocityY: 34,
+            });
+          });
+
+        // Handle socket connection errors
+        socket.on("connect_error", (err) => {
+          console.error("Socket connection error:", err);
+        });
+
+        //socket.on("sendCode", (data) => {});
+
+        //send the code that will be used for the session
+        // socket.emit("startGame", randomAlphanumericCode);
+
+        //socket.on("ballUpdate", (data) => {});
+      });
+    </script>
+  </head>
+  <body>
+    <center><h1>Player View</h1></center>
+    <div class="container text-center my-5">
+      <button id="move">move</button>
+
+      <div id="spinnerLoader" class="spinner-border m-5" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+
+      <span id="loadingMessage"
+        >Please wait a minute while we get the maze for you.</span
+      >
+
+      <button id="request" class="btn btn-primary">request permission</button>
+      <button id="joystick-head">start</button>
+      <center>
+        <div id="game" class="mb-4">
+          <div id="maze" class="mb-3"></div>
+        </div>
+      </center>
+
+      <div id="joystick" class="mx-auto">
+        <div class="joystick-arrow"></div>
+        <div class="joystick-arrow"></div>
+        <div class="joystick-arrow"></div>
+        <div class="joystick-arrow"></div>
+      </div>
+      <div id="note" class="mt-3">
+        Click the joystick to start!
+        <p>Move every ball to the center. Ready for hard mode? Press H</p>
+      </div>
+
+      <div id="youtube-card" class="mb-4">
+        How to simulate ball movement in a maze with JavaScript
+      </div>
+    </div>
+
+    <!-- <center>
+      <span id="sessionCode" class="border border-dark p-4 ml-4">CODE </span>
+    </center> -->
+
+    <script src="/js/playerView.js"></script>
+  </body>
+</html>
